@@ -134,12 +134,45 @@
       header, section, footer, .hero { padding: 40px 20px; }
       .hero h1 { font-size: 2.4rem; }
     }
+
+    /* Branding animation */
+    .brand-name{
+      font-size:1.2rem;
+      font-weight:500;
+      letter-spacing:1px;
+      color:var(--white);
+      position:relative;
+      cursor:pointer;
+      transition:color .4s ease;
+    }
+
+    .brand-name::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-4px;
+      width:0;
+      height:1px;
+      background:linear-gradient(90deg, var(--silver), var(--white));
+      transition:width .4s ease;
+    }
+
+    .brand-name:hover{
+      color:var(--silver);
+    }
+
+    .brand-name:hover::after{
+      width:100%;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <img src="logo.png" alt="Logo Digital Den Designs Studios">
+  <div style="display:flex;align-items:center;gap:15px;">
+    <img src="logo.png" alt="Logo Digital Den Designs Studios">
+    <span class="brand-name">Digital Den Designs Studios</span>
+  </div>
   <nav>
     <a href="#services">Services</a>
     <a href="#pricing">Offres</a>
@@ -165,15 +198,30 @@
 <section id="pricing">
   <h2 class="section-title">Offres</h2>
   <div class="pricing">
-    <div class="price-card"><h3>Essentiel</h3><p class="price">€1 200</p><p>Site vitrine premium</p><button class="cta" onclick="checkout('price_ESSENTIEL')">Commander</button></div>
-    <div class="price-card"><h3>Business</h3><p class="price">€2 500</p><p>Site commercial optimisé</p><button class="cta" onclick="checkout('price_BUSINESS')">Commander</button></div>
-    <div class="price-card"><h3>Elite</h3><p class="price">€4 500</p><p>Solution complète sur-mesure</p><button class="cta" onclick="checkout('price_ELITE')">Commander</button></div>
+    <div class="price-card">
+      <h3>Essentiel</h3>
+      <p class="price">€1 200</p>
+      <p>Site vitrine premium</p>
+      <div id="paypal-essentiel"></div>
+    </div>
+    <div class="price-card">
+      <h3>Business</h3>
+      <p class="price">€2 500</p>
+      <p>Site commercial optimisé</p>
+      <div id="paypal-business"></div>
+    </div>
+    <div class="price-card">
+      <h3>Elite</h3>
+      <p class="price">€4 500</p>
+      <p>Solution complète sur-mesure</p>
+      <div id="paypal-elite"></div>
+    </div>
   </div>
 </section>
 
 <section id="booking">
   <h2 class="section-title">Prendre rendez-vous</h2>
-  <iframe src="https://calendar.google.com/calendar/appointments/schedules/https://calendar.google.com/calendar/u/0?cid=MTU4NzY3MGE5Y2I3ODk2ZjM3Mzk3MDhiOGEyNGZlMTU0MzAzZWM2ZGM5YjhkZGQ4NzM4MWViMGRhNjU2OWQzNUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t"></iframe>
+  <iframe src="https://calendar.google.com/calendar/appointments/schedules/https://calendar.google.com/calendar/embed?src=1587670a9cb7896f3739708b8a24fe154303ec6dc9b8ddd87381eb0da6569d35%40group.calendar.google.com&ctz=Europe%2FParis" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 </section>
 
 <footer>
@@ -181,22 +229,8 @@
   <p>digitaldendesignsstudios@gmail.com</p>
 </footer>
 
-<!-- Stripe -->
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-  const stripe = Stripe('YOUR_PUBLIC_STRIPE_KEY');
-
-  function checkout(priceId) {
-    stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: 'payment',
-      billingAddressCollection: 'required',
-      successUrl: window.location.origin + '/success.html',
-      cancelUrl: window.location.origin + '/cancel.html'
-    });
-  }
-</script>
-
+<!-- PayPal -->
+<script src="https://www.paypal.com/sdk/js?client-id=AWNW2WHFW4YCS&currency=EUR"></script>
 <script>
   const sections = document.querySelectorAll('section');
   const observer = new IntersectionObserver(entries => {
@@ -205,6 +239,11 @@
     });
   }, { threshold: 0.2 });
   sections.forEach(sec => observer.observe(sec));
+
+  // PayPal buttons rendering
+  renderPayPalButtons('#paypal-essentiel', '1200.00', 'Offre Essentiel – Digital Den Designs Studios');
+  renderPayPalButtons('#paypal-business', '2500.00', 'Offre Business – Digital Den Designs Studios');
+  renderPayPalButtons('#paypal-elite', '4500.00', 'Offre Elite – Digital Den Designs Studios');
 </script>
 
 </body>
