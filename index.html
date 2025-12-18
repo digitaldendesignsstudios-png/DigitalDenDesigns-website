@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Digital Den Designs Studios | Sites internet premium</title>
+<meta name="description" content="Agence premium de création de sites internet haut de gamme.">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--black:#0f0f0f;--dark:#1a1a1a;--gray:#3a3a3a;--silver:#cfcfcf;--white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+body{background:linear-gradient(135deg,var(--black),var(--dark));color:white;}
+header{
+display:flex;justify-content:space-between;align-items:center;
+padding:25px 80px;
+background:linear-gradient(to bottom,#e5e5e5,#0f0f0f);
+position:sticky;top:0;z-index:1000;
+}
+nav a{color:var(--silver);margin-left:30px;text-decoration:none;}
+.hero{min-height:90vh;display:flex;flex-direction:column;justify-content:center;padding:80px;}
+.cta{margin-top:30px;padding:15px 40px;border-radius:50px;border:none;cursor:pointer;}
+section{padding:120px 80px;}
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;}
+.price-card{background:rgba(255,255,255,.05);padding:40px;border-radius:30px;text-align:center;}
+.paypal-container{display:none;}
+</style>
+</head>
+
+<body>
+
+<header>
+<div style="display:flex;align-items:center;gap:15px;">
+<img src="logo.png" height="55">
+<strong>Digital Den Designs Studios</strong>
+</div>
+<nav>
+<a href="#pricing">Offres</a>
+<a href="#booking">Rendez-vous</a>
+<a href="#" onclick="openLogin()">Connexion</a>
+</nav>
+</header>
+
+<section class="hero">
+<h1>Création de sites internet premium</h1>
+<p>Design luxe, performance et conversion.</p>
+</section>
+
+<section id="pricing">
+<h2>Offres</h2>
+<div class="pricing">
+
+<div class="price-card">
+<h3>Essentiel</h3>
+<p>€1 200</p>
+<button class="cta" onclick="openLogin()">Se connecter pour payer</button>
+<div id="paypal-essentiel" class="paypal-container"></div>
+</div>
+
+<div class="price-card">
+<h3>Business</h3>
+<p>€2 500</p>
+<button class="cta" onclick="openLogin()">Se connecter pour payer</button>
+<div id="paypal-business" class="paypal-container"></div>
+</div>
+
+<div class="price-card">
+<h3>Elite</h3>
+<p>€4 500</p>
+<button class="cta" onclick="openLogin()">Se connecter pour payer</button>
+<div id="paypal-elite" class="paypal-container"></div>
+</div>
+
+</div>
+</section>
+
+<section id="booking">
+<iframe src="https://calendly.com/digitaldendesignsstudios/30min" width="100%" height="600"></iframe>
+</section>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;">
+<div style="background:#111;padding:40px;border-radius:20px;">
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Mot de passe"><br><br>
+<button class="cta" onclick="login()">Connexion</button>
+<button class="cta" onclick="register()">Créer un compte</button>
+</div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAHEhyMnqLZMSv_EsJ9hJbM_m76qjt3Ts8",
+  authDomain: "digital-den-designs-studio-web.firebaseapp.com",
+  projectId: "digital-den-designs-studio-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.openLogin = ()=> loginModal.style.display="flex";
+window.login = ()=> signInWithEmailAndPassword(auth,email.value,password.value);
+window.register = ()=> createUserWithEmailAndPassword(auth,email.value,password.value);
+
+onAuthStateChanged(auth,user=>{
+if(user){
+loginModal.style.display="none";
+document.querySelectorAll('.paypal-container').forEach(el=>el.style.display='block');
+}
+});
+</script>
+
+<!-- PAYPAL -->
+<script src="https://www.paypal.com/sdk/js?client-id=TON_CLIENT_ID_PAYPAL&currency=EUR"></script>
+<script>
+function render(id,amount){
+paypal.Buttons({
+createOrder:(d,a)=>a.order.create({purchase_units:[{amount:{value:amount}}]}),
+onApprove:(d,a)=>a.order.capture().then(()=>location.href="dashboard.html")
+}).render(id);
+}
+render("#paypal-essentiel","1200.00");
+render("#paypal-business","2500.00");
+render("#paypal-elite","4500.00");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Espace client | Digital Den Designs Studios</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--black:#0f0f0f;
+--dark:#1a1a1a;
+--gray:#3a3a3a;
+--silver:#cfcfcf;
+--white:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
+body{
+background:linear-gradient(135deg,var(--black),var(--dark));
+color:var(--white);
+min-height:100vh;
+}
+
+header{
+padding:25px 80px;
+border-bottom:1px solid var(--gray);
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+header a{
+color:var(--silver);
+text-decoration:none;
+}
+
+.dashboard{
+padding:80px;
+max-width:1200px;
+margin:auto;
+}
+
+.card{
+background:rgba(255,255,255,.05);
+border-radius:25px;
+padding:40px;
+border:1px solid var(--gray);
+margin-bottom:40px;
+}
+
+.progress-bar{
+width:100%;
+height:12px;
+background:#222;
+border-radius:10px;
+overflow:hidden;
+margin-top:15px;
+}
+
+.progress{
+height:100%;
+background:linear-gradient(90deg,#cfcfcf,#ffffff);
+width:0%;
+transition:width .6s ease;
+}
+
+.logout{
+background:none;
+border:1px solid var(--silver);
+padding:10px 25px;
+border-radius:30px;
+color:var(--silver);
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<strong>Digital Den Designs Studios</strong>
+<button class="logout" onclick="logout()">Déconnexion</button>
+</header>
+
+<div class="dashboard">
+
+<h1>Votre projet</h1>
+<p>Suivi en temps réel de l’avancement</p>
+
+<div class="card">
+<h3 id="projectName">Projet en cours</h3>
+<p id="projectDesc">Initialisation…</p>
+
+<div class="progress-bar">
+<div class="progress" id="progressBar"></div>
+</div>
+
+<p style="margin-top:15px;">
+Avancement : <strong id="progressValue">0%</strong>
+</p>
+</div>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAHEhyMnqLZMSv_EsJ9hJbM_m76qjt3Ts8",
+  authDomain: "digital-den-designs-studio-web.firebaseapp.com",
+  projectId: "digital-den-designs-studio-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* Sécurité : accès interdit sans connexion */
+onAuthStateChanged(auth, async (user) => {
+  if(!user){
+    window.location.href = "index.html";
+    return;
+  }
+
+  /* Récupération du projet du client */
+  const ref = doc(db, "projects", user.uid);
+  const snap = await getDoc(ref);
+
+  if(snap.exists()){
+    const data = snap.data();
+    document.getElementById("projectName").innerText = data.name;
+    document.getElementById("projectDesc").innerText = data.description;
+    document.getElementById("progressBar").style.width = data.progress + "%";
+    document.getElementById("progressValue").innerText = data.progress + "%";
+  }
+});
+
+window.logout = () => signOut(auth).then(()=>location.href="index.html");
+</script>
+
+</body>
+</html>
